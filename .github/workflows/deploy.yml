@@ -66,7 +66,7 @@ jobs:
             mkdir -p /home/ec2-user/realtime-predictive-engine
             cd /home/ec2-user/realtime-predictive-engine
             
-            # FORCE OVERWRITE the docker-compose file directly onto the server disk
+            # FORCE OVERWRITE with an added database healthcheck system
             cat << 'EOF' > docker-compose.yml
             version: '3.8'
             
@@ -82,6 +82,11 @@ jobs:
                   - "3306:3306"
                 volumes:
                   - mysql_production_data:/var/lib/mysql
+                healthcheck:
+                  test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pKumar@123"]
+                  interval: 5s
+                  timeout: 5s
+                  retries: 5
             
               backend:
                 image: 33065432/predictive-backend:latest
@@ -90,7 +95,8 @@ jobs:
                 ports:
                   - "8000:8000"
                 depends_on:
-                  - db
+                  db:
+                    condition: service_healthy
                 environment:
                   - DB_HOST=db
             
