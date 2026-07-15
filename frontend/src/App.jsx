@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FiShield, FiUsers, FiLock, FiUser, FiShoppingBag, FiTrash2, FiLogOut, FiCheckCircle, FiAlertTriangle, FiUserPlus, FiMessageSquare } from 'react-icons/fi';
 import './App.css';
-
+const API_BASE_URL = "http://43.205.233.136:8000";
 function App() {
   // Global Session State Managers
   const [userSession, setUserSession] = useState(null); 
@@ -73,7 +73,7 @@ function App() {
 
   const fetchAdminMetrics = async () => {
     try {
-      const res = await fetch('http://localhost:8000/admin/analytics');
+      const res = await fetch(`${API_BASE_URL}/admin/analytics`);
       if (res.ok) {
         const data = await res.json();
         setAdminRecords(data);
@@ -90,7 +90,7 @@ function App() {
       return () => clearInterval(interval);
     } else if (userSession?.role === 'customer') {
       try {
-        fetch('http://localhost:8000/products').then(res => res.json()).then(data => setShopProducts(data));
+        fetch(`${API_BASE_URL}/products`).then(res => res.json()).then(data => setShopProducts(data));
       } catch (err) { console.error("Error connecting inventory payload nodes:", err); }
     }
   }, [userSession]);
@@ -99,7 +99,7 @@ function App() {
     e.preventDefault();
     setAuthError(null);
     try {
-      const res = await fetch('http://localhost:8000/login', {
+      const res = await fetch(`${API_BASE_URL}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username_or_id: loginForm.username, password: loginForm.password })
@@ -124,7 +124,7 @@ function App() {
     const coords = await getGeoCoordinates();
 
     try {
-      const res = await fetch('http://localhost:8000/register', {
+      const res = await fetch(`${API_BASE_URL}/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -157,7 +157,7 @@ function App() {
     if (!window.confirm("CRITICAL WARNING: Are you sure you want to permanently deactivate your profile and log your specified exit feedback into admin telemetry logs?")) return;
     
     try {
-      const res = await fetch('http://localhost:8000/delete-account', {
+      const res = await fetch(`${API_BASE_URL}/delete-account`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 

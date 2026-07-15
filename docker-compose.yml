@@ -29,7 +29,7 @@ services:
     container_name: store_react_frontend
     restart: always
     ports:
-      - "3000:3000"
+      - "3000:80"
     depends_on:
       - backend
 
