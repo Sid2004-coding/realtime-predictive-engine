@@ -12,9 +12,7 @@ import uuid
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from databases import Base, engine
 
-Base.metadata.create_all(bind=engine)
 # --- CONFIGURATION KEYS ---
 SMTP_SERVER = "smtp.gmail.com"          # Or your preferred provider / Mailtrap relay node
 SMTP_PORT = 587
@@ -53,8 +51,9 @@ class DeleteAccountRequest(BaseModel):
     customer_id: str
     reason: str
 
+# Read DB_HOST dynamically from the environment variables injected by Docker Compose
 DB_SETTINGS = {
-    "host": "host.docker.internal" if os.path.exists('/.dockerenv') else "127.0.0.1",
+    "host": os.getenv("DB_HOST", "127.0.0.1"),
     "user": "root",
     "password": "Kumar@123",
     "database": "fraud_detection_db",
