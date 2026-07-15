@@ -9,7 +9,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade -r requirements.txt
 
 # 3. Copy only the internal app directory contents directly into /app
-COPY app/ ./app/
+COPY . .
 
 EXPOSE 8000
 
