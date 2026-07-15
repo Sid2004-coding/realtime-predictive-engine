@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+xgboost
+numpy
+pandas
+scikit-learn
+pymysql
+websockets

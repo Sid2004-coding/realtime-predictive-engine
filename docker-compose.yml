@@ -1,0 +1,28 @@
+services:
+  # Service 1: The FastAPI Backend & ML Model Engine
+  backend:
+    build: ./ml-worker
+    image: fraud-backend
+    container_name: fraud_backend_container
+    ports:
+      - "8000:8000"
+    restart: always
+    networks:
+      - fraud-network
+
+  # Service 2: The React/Vite Frontend Dashboard
+  frontend:
+    build: ./frontend
+    image: fraud-frontend
+    container_name: fraud_frontend_container
+    ports:
+      - "3000:80"
+    restart: always
+    depends_on:
+      - backend
+    networks:
+      - fraud-network
+
+networks:
+  fraud-network:
+    driver: bridge

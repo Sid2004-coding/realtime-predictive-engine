@@ -1,0 +1,7 @@
+node_modules/
+.env
+__pycache__/
+*.json
+!package.json
+!my_fraud_model.json
+*.csv

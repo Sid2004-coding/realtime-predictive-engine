@@ -1,0 +1,129 @@
+body {
+  background-color: #0f172a;
+  color: #f8fafc;
+  font-family: system-ui, -apple-system, sans-serif;
+  margin: 0;
+}
+
+.dashboard-container { 
+  padding: 2rem; 
+  max-width: 1200px; 
+  margin: 0 auto; 
+}
+
+.dashboard-header { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  border-bottom: 1px solid #334155; 
+  padding-bottom: 1rem; 
+}
+
+/* 🌐 TOP NAVIGATION COMPONENT STYLING */
+.global-nav {
+  display: flex;
+  background: #1e293b;
+  padding: 10px 20px;
+  border-radius: 8px;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #334155;
+  margin-bottom: 20px;
+}
+
+.nav-btn {
+  background: transparent;
+  color: #94a3b8;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.nav-btn:hover {
+  background: #273549;
+  color: #f8fafc;
+}
+
+.nav-btn.active {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.status-badge { 
+  display: flex; 
+  align-items: center; 
+  gap: 0.5rem; 
+  padding: 0.5rem 1rem; 
+  border-radius: 9999px; 
+  font-size: 0.85rem; 
+  font-weight: 600; 
+}
+
+.status-badge.online { background: #064e3b; color: #34d399; }
+.status-badge.offline { background: #7f1d1d; color: #f87171; }
+.dot { width: 8px; height: 8px; background: currentColor; border-radius: 50%; display: inline-block; }
+
+.dashboard-grid { 
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+  gap: 1.5rem; 
+  margin: 2rem 0; 
+}
+
+.churn-top-row {
+  display: grid;
+  grid-template-columns: 1.4fr 0.8fr;
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+.metric-card { 
+  background: #1e293b; 
+  padding: 1.5rem; 
+  border-radius: 12px; 
+  border: 1px solid #334155; 
+  display: flex; 
+  flex-direction: column; 
+  align-items: flex-start; 
+}
+
+/* 📊 CHART OVERRIDE: Protects chart alignment structure from layout collapse */
+.metric-card.chart-card-wrapper {
+  display: block !important; 
+  align-items: stretch !important;
+}
+
+.icon { font-size: 2rem; margin-bottom: 0.5rem; }
+.icon.streaming { color: #38bdf8; }
+.icon.critical { color: #f87171; }
+.counter-text { font-size: 2.5rem; font-weight: 700; margin: 0; color: #f87171; }
+
+/* TABLES SECTIONS LAYOUTS */
+.log-table-container { background: #1e293b; border-radius: 12px; border: 1px solid #334155; overflow: hidden; }
+.log-table { width: 100%; border-collapse: collapse; text-align: left; }
+.log-table th, .log-table td { padding: 1rem; border-bottom: 1px solid #334155; }
+.log-table th { background: #111827; color: #94a3b8; font-weight: 600; }
+
+.row-fraud { background-color: rgba(220, 38, 38, 0.12) !important; }
+.row-safe { background-color: transparent; }
+
+.badge { display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 700; }
+.badge.danger { background: #dc2626; color: white; }
+.badge.safe { background: #16a34a; color: white; }
+.empty-state { text-align: center; color: #64748b; padding: 2rem; }
+
+.animate-fade {
+  animation: fadeIn 0.25s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
