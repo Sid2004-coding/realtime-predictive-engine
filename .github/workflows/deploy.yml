@@ -114,11 +114,12 @@ jobs:
               mysql_production_data:
             EOF
 
-            # Run with explicit system privileges to prevent execution context drops
-            echo "${{ secrets.DOCKERHUB_TOKEN }}" | sudo docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-            sudo docker compose pull
-            sudo docker compose down --remove-orphans
-            sudo docker compose up -d --force-recreate
+            # Authenticate target machine and download fresh builds using standard user privileges
+            echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+            docker compose pull
+            docker compose down --remove-orphans
+            docker compose up -d --force-recreate
+            docker image prune -f
 
       - name: Inspect Live Container Telemetry and Logs
         uses: appleboy/ssh-action@master
@@ -129,6 +130,6 @@ jobs:
           script: |
             cd /home/ec2-user/realtime-predictive-engine
             echo "=== CONTAINER STATUS ==="
-            sudo docker compose ps
+            docker compose ps
             echo "=== BACKEND ERROR LOGS ==="
-            sudo docker compose logs backend --tail 30
+            docker compose logs backend --tail 30
