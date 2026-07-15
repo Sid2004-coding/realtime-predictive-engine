@@ -262,10 +262,11 @@ def delete_customer_account(payload: DeleteAccountRequest):
 
 @app.get("/admin/analytics")
 async def get_admin_dashboard_metrics():
-    """Fetches real-time structured data to populate Admin dashboard tables and annual leave bar graphs."""
+    """Fetches real-time structured data to populate Admin dashboard tables."""
     connection = pymysql.connect(**DB_SETTINGS)
     try:
         with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+            # Using LEFT JOIN so EVERY customer displays, even if they don't have a churn log yet
             sql = """
             SELECT c.customer_id, c.customer_name, c.email, c.phone_no, c.date_joined, 
                    COALESCE(ch.churn_status, 0) AS churn_status, ch.date_left, ch.top_reason 
