@@ -80,7 +80,19 @@ def verify_and_build_tables():
     try:
         connection = pymysql.connect(**DB_SETTINGS)
         with connection.cursor() as cursor:
-            # 1. Update customers table to support password verification tracking
+            # 1. Create the Transaction Logs Table (CRITICAL FIX)
+            cursor.execute("""
+            CREATE TABLE IF NOT EXISTS transaction_logs (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                amount DECIMAL(10, 2) NOT NULL,
+                city_population INT NOT NULL,
+                distance_calculated FLOAT NOT NULL,
+                fraud_probability FLOAT NOT NULL,
+                is_fraud_flag TINYINT NOT NULL
+            );
+            """)
+
+            # 2. Update customers table to support password verification tracking
             cursor.execute("""
             CREATE TABLE IF NOT EXISTS customers (
                 customer_id VARCHAR(50) PRIMARY KEY,
@@ -89,10 +101,12 @@ def verify_and_build_tables():
                 phone_no VARCHAR(20),
                 password_hash VARCHAR(255) NOT NULL,
                 date_joined DATE NOT NULL,
-                associated_transaction_id INT
+                associated_transaction_id INT,
+                FOREIGN KEY (associated_transaction_id) REFERENCES transaction_logs(id) ON DELETE SET NULL
             );
             """)
-            # 2. Re-verify Churn table relationship structure
+
+            # 3. Re-verify Churn table relationship structure
             cursor.execute("""
             CREATE TABLE IF NOT EXISTS customer_churn_logs (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -109,7 +123,6 @@ def verify_and_build_tables():
         print("🗄️ Database tables verified and linked cleanly.")
     except Exception as e:
         print(f"⚠️ Initial schema construction failed: {str(e)}")
-
 # --- ENDPOINTS ---
 
 @app.post("/register")
@@ -255,9 +268,9 @@ async def get_admin_dashboard_metrics():
         with connection.cursor(pymysql.cursors.DictCursor) as cursor:
             sql = """
             SELECT c.customer_id, c.customer_name, c.email, c.phone_no, c.date_joined, 
-                   ch.churn_status, ch.date_left, ch.top_reason 
+                   COALESCE(ch.churn_status, 0) AS churn_status, ch.date_left, ch.top_reason 
             FROM customers c
-            JOIN customer_churn_logs ch ON c.customer_id = ch.customer_id
+            LEFT JOIN customer_churn_logs ch ON c.customer_id = ch.customer_id
             ORDER BY c.date_joined DESC
             """
             cursor.execute(sql)
