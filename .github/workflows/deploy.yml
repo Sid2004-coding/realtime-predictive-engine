@@ -94,11 +94,9 @@ jobs:
                 restart: always
                 ports:
                   - "8000:8000"
-                depends_on:
-                  db:
-                    condition: service_healthy
                 environment:
                   - DB_HOST=db
+                command: uvicorn backend-ingest.main:app --host 0.0.0.0 --port 8000
             
               frontend:
                 image: 33065432/predictive-frontend:latest
