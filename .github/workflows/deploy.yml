@@ -14,7 +14,7 @@ jobs:
       - name: Setup Python Environment Context
         uses: actions/setup-python@v4
         with:
-          python-node: '3.10'
+          python-version: '3.10'
 
       - name: Install Ingest Backend Dependencies
         run: |
@@ -76,5 +76,16 @@ jobs:
             
             # Clear hanging stale memory asset cache nodes
             docker image prune -f
+      - name: Inspect Live Container Telemetry and Logs
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.AWS_HOST }}
+          username: ec2-user
+          key: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
+          script: |
+            cd /home/ec2-user/realtime-predictive-engine
+            echo "=== CONTAINER STATUS ==="
+            sudo docker ps -a
+            echo "=== BACKEND ERROR LOGS ==="
+            sudo docker logs fraud_fastapi_backend --tail 20
 
-            
