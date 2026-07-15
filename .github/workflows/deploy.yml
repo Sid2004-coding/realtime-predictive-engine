@@ -47,7 +47,7 @@ jobs:
       - name: Compile and Push Backend Ingest Image Node
         uses: docker/build-push-action@v4
         with:
-          context: .
+          context: ./backend-ingest          # <-- FIXED: Scopes build context to the backend folder
           file: ./backend-ingest/Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/predictive-backend:latest
@@ -66,7 +66,7 @@ jobs:
             mkdir -p /home/ec2-user/realtime-predictive-engine
             cd /home/ec2-user/realtime-predictive-engine
             
-            # FORCE OVERWRITE with an added database healthcheck system
+            # Write out the absolute configuration
             cat << 'EOF' > docker-compose.yml
             version: '3.8'
             
@@ -94,10 +94,12 @@ jobs:
                 restart: always
                 ports:
                   - "8000:8000"
+                depends_on:
+                  db:
+                    condition: service_healthy
                 environment:
                   - DB_HOST=db
-                  - PYTHONPATH=/app
-                command: uvicorn backend-ingest.app.main:app --host 0.0.0.0 --port 8000
+                command: uvicorn app.main:app --host 0.0.0.0 --port 8000
             
               frontend:
                 image: 33065432/predictive-frontend:latest
@@ -112,18 +114,11 @@ jobs:
               mysql_production_data:
             EOF
 
-            # Authenticate target machine to download fresh builds
-            echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-            
-            # Pull down fresh built images
-            docker compose pull
-            
-            # Recreate application containers cleanly
-            docker compose down
-            docker compose up -d --build --force-recreate --remove-orphans
-            
-            # Clear hanging stale memory asset cache nodes
-            docker image prune -f
+            # Run with explicit system privileges to prevent execution context drops
+            echo "${{ secrets.DOCKERHUB_TOKEN }}" | sudo docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+            sudo docker compose pull
+            sudo docker compose down --remove-orphans
+            sudo docker compose up -d --force-recreate
 
       - name: Inspect Live Container Telemetry and Logs
         uses: appleboy/ssh-action@master
@@ -134,6 +129,6 @@ jobs:
           script: |
             cd /home/ec2-user/realtime-predictive-engine
             echo "=== CONTAINER STATUS ==="
-            docker compose ps
+            sudo docker compose ps
             echo "=== BACKEND ERROR LOGS ==="
-            docker compose logs backend --tail 30
+            sudo docker compose logs backend --tail 30
