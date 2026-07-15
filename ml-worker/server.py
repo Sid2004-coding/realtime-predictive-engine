@@ -12,7 +12,9 @@ import uuid
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from databases import Base, engine
 
+Base.metadata.create_all(bind=engine)
 # --- CONFIGURATION KEYS ---
 SMTP_SERVER = "smtp.gmail.com"          # Or your preferred provider / Mailtrap relay node
 SMTP_PORT = 587
@@ -28,10 +30,10 @@ origins = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,         # Allow our explicit frontend URLs
+    allow_origins=["http://43.205.233.136:3000", "http://localhost:3000"],
     allow_credentials=True,
-    allow_methods=["*"],           # Allow all HTTP actions (POST, GET, etc.)
-    allow_headers=["*"],           # Allow all headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # --- REQUEST SCHEMAS ---
