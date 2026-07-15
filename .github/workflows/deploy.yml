@@ -96,7 +96,7 @@ jobs:
                   - "8000:8000"
                 environment:
                   - DB_HOST=db
-                command: uvicorn backend-ingest.main:app --host 0.0.0.0 --port 8000
+                command: uvicorn app.main:app --host 0.0.0.0 --port 8000
             
               frontend:
                 image: 33065432/predictive-frontend:latest
