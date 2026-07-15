@@ -85,7 +85,7 @@ jobs:
           key: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
           script: |
             cd /home/ec2-user/realtime-predictive-engine
-            echo "=== CONTAINER STATUS ==="
-            sudo docker ps -a
-            echo "=== BACKEND ERROR LOGS ==="
-            sudo docker logs fraud_fastapi_backend --tail 30
+            echo "=== DOCKER COMPOSE CONFIGURATION CHECK ==="
+            sudo docker compose config
+            echo "=== DOCKER COMPOSE RUN LOGS ==="
+            sudo docker compose up -d
