@@ -2,16 +2,16 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-# 1. Copy dependencies relative to the backend-ingest folder context
+# 1. Copy requirements relative to ml-worker context
 COPY requirements.txt .
 
-# 2. Install Python packages
+# 2. Install dependencies
 RUN pip install --no-cache-dir --upgrade -r requirements.txt
 
-# 3. Copy everything inside backend-ingest directly into /app
+# 3. Copy everything in ml-worker directly into /app
 COPY . .
 
 EXPOSE 8000
 
-# 4. Run Uvicorn directly on the app module inside the container
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# 4. Start the FastAPI application via server.py
+CMD ["uvicorn", "server:app", "--host", "0.0.0.0", "--port", "8000"]

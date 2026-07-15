@@ -47,8 +47,8 @@ jobs:
       - name: Compile and Push Backend Ingest Image Node
         uses: docker/build-push-action@v4
         with:
-          context: ./backend-ingest          # <-- FIXED: Scopes build context to the backend folder
-          file: ./backend-ingest/Dockerfile
+          context: ./ml-worker                 # <-- CHANGED TO ML-WORKER
+          file: ./ml-worker/Dockerfile         # <-- MAP TO ML-WORKER DOCKERFILE
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/predictive-backend:latest
 
@@ -99,7 +99,7 @@ jobs:
                     condition: service_healthy
                 environment:
                   - DB_HOST=db
-                command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+                command: uvicorn server:app --host 0.0.0.0 --port 8000
             
               frontend:
                 image: 33065432/predictive-frontend:latest
