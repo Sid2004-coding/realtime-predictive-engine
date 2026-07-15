@@ -9,7 +9,6 @@ COPY backend-ingest/requirements.txt .
 
 # 4. Install the backend python modules
 RUN pip install --no-cache-dir --upgrade -r requirements.txt
-
 # 5. Copy the rest of the backend ingestion server application code files
 COPY . .
 
