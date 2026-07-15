@@ -21,12 +21,17 @@ ADMIN_PASSWORD = "mbwthowmycffniwm"    # Use an App Password, not your master lo
 
 app = FastAPI(title="Unified E-Shop Gateway & Risk Analytics Control Center")
 
+origins = [
+    "http://43.205.233.136:3000",  # Your production frontend URL
+    "http://localhost:3000",       # Local development
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,         # Allow our explicit frontend URLs
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"],           # Allow all HTTP actions (POST, GET, etc.)
+    allow_headers=["*"],           # Allow all headers
 )
 
 # --- REQUEST SCHEMAS ---
