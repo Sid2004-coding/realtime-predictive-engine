@@ -65,13 +65,16 @@ jobs:
           script: |
             cd /home/ec2-user/realtime-predictive-engine
             
+            # CRITICAL FIX: Pull down the newly updated docker-compose.yml file onto the server
+            git pull origin main || true
+            
             # Authenticate target machine to download fresh builds
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
             
-            # Pull down fresh built images
+            # Pull down fresh built images from your explicit profile namespace
             docker compose pull
             
-            # Recreate application containers cleanly under the correct user context
+            # Recreate application containers cleanly with the updated config mapping
             docker compose down
             docker compose up -d --build --force-recreate --remove-orphans
             
