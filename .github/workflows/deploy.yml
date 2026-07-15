@@ -63,18 +63,57 @@ jobs:
           username: ec2-user
           key: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
           script: |
+            mkdir -p /home/ec2-user/realtime-predictive-engine
             cd /home/ec2-user/realtime-predictive-engine
             
-            # CRITICAL FIX: Pull down the newly updated docker-compose.yml file onto the server
-            git pull origin main || true
+            # FORCE OVERWRITE the docker-compose file directly onto the server disk
+            cat << 'EOF' > docker-compose.yml
+            version: '3.8'
             
+            services:
+              db:
+                image: mysql:8.0
+                container_name: fraud_mysql_db
+                restart: always
+                environment:
+                  MYSQL_ROOT_PASSWORD: "Kumar@123"
+                  MYSQL_DATABASE: "fraud_detection_db"
+                ports:
+                  - "3306:3306"
+                volumes:
+                  - mysql_production_data:/var/lib/mysql
+            
+              backend:
+                image: 33065432/predictive-backend:latest
+                container_name: fraud_fastapi_backend
+                restart: always
+                ports:
+                  - "8000:8000"
+                depends_on:
+                  - db
+                environment:
+                  - DB_HOST=db
+            
+              frontend:
+                image: 33065432/predictive-frontend:latest
+                container_name: store_react_frontend
+                restart: always
+                ports:
+                  - "3000:3000"
+                depends_on:
+                  - backend
+            
+            volumes:
+              mysql_production_data:
+            EOF
+
             # Authenticate target machine to download fresh builds
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
             
-            # Pull down fresh built images from your explicit profile namespace
+            # Pull down fresh built images
             docker compose pull
             
-            # Recreate application containers cleanly with the updated config mapping
+            # Recreate application containers cleanly
             docker compose down
             docker compose up -d --build --force-recreate --remove-orphans
             
