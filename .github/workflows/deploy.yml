@@ -68,12 +68,12 @@ jobs:
             # Authenticate target machine to download fresh builds
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
             
-            # Pull down fresh built images using standalone compose
-            docker-compose pull
+            # Pull down fresh built images
+            docker compose pull
             
-            # Recreate application containers cleanly using standalone command
-            docker-compose down
-            docker-compose up -d --build --force-recreate --remove-orphans
+            # Recreate application containers cleanly under the correct user context
+            docker compose down
+            docker compose up -d --build --force-recreate --remove-orphans
             
             # Clear hanging stale memory asset cache nodes
             docker image prune -f
@@ -87,6 +87,6 @@ jobs:
           script: |
             cd /home/ec2-user/realtime-predictive-engine
             echo "=== CONTAINER STATUS ==="
-            docker-compose ps
+            docker compose ps
             echo "=== BACKEND ERROR LOGS ==="
-            docker logs fraud_fastapi_backend --tail 30 || true
+            docker compose logs backend --tail 30
